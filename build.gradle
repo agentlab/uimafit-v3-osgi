@@ -1,0 +1,148 @@
+import aQute.bnd.gradle.Bundle
+import aQute.bnd.gradle.Export
+import aQute.bnd.gradle.TestOSGi
+
+buildscript {
+    repositories {
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
+        maven {
+            url 'https://bndtools.ci.cloudbees.com/job/bnd.master/lastSuccessfulBuild/artifact/dist/bundles'
+        }
+		jcenter()
+		mavenLocal()
+    }
+    dependencies {
+        classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:+'
+        classpath 'com.dictanova.jcasgen.gradle:gradle-jcasgen-plugin:3.0'
+    }
+}
+
+//plugins {
+//    id "com.dictanova.jcasgen" version "3.0"
+//}
+
+version '3.0.0'
+description = 'Apache UIMA Fit project'
+
+def repositorySnapshot = "https://agentlab.ru/nexus/repository/maven-snapshots/"
+def repositoryRelease  = "https://agentlab.ru/nexus/repository/maven-releases/"
+def repositoryUsername = "ci"
+def repositoryPassword = "=S%gm/Hpt"
+def snapshot = '-SNAPSHOT'
+
+def uimaVersion = '3.0.0-alpha02'
+
+allprojects {
+
+    group = 'org.apache.uima'
+
+    apply plugin: 'maven-publish'
+
+    publishing {
+        if (project.hasProperty('release')){
+            repositories {
+                maven {
+                    url repositoryRelease
+                    credentials {
+                        username repositoryUsername
+                        password repositoryPassword
+                    }
+                }
+            }
+        } else {
+            repositories {
+                maven {
+                    url repositorySnapshot
+                    credentials {
+                        username repositoryUsername
+                        password repositoryPassword
+                    }
+                }
+            }
+        }
+    }
+
+    afterEvaluate { project ->
+        if (!project.hasProperty('release')){
+            project.version += snapshot
+        }
+        // println project.version
+    }
+
+}
+
+subprojects {
+
+    apply plugin: 'com.dictanova.jcasgen'
+    apply plugin: 'java'
+    apply plugin: 'biz.aQute.bnd.builder'
+
+    repositories {
+        mavenLocal()
+		mavenCentral()
+    }
+
+    dependencies {
+        compileOnly 'org.projectlombok:lombok:1.16.16'
+        compileOnly 'org.osgi:org.osgi.annotation:6.0.0'
+    }
+
+    afterEvaluate { project ->
+        jar {
+            manifest {
+                attributes(
+                    'Bundle-Vendor'         : 'https://www.agentlab.ru',
+                    'Bundle-Version'        : "${project.version}",
+                    'Bundle-Description'    : "${project.description}",
+                    'Bundle-Copyright'      : 'AgentLab (c)',
+                    'Bundle-License'        : 'https://www.gnu.org/licenses/lgpl.html',
+                    'Bundle-ContactAddress' : 'amivanoff@gmail.com',
+                    'Export-Package'        : "${project.name}.*",
+                    '-sources'              : 'false', // Not include sources into bundle
+                    '-removeheaders'        : 'Provide-Capability, Require-Capability',
+                    '-contract'             : '!*',
+                    '-noextraheaders'       : 'true',
+                    '-baseline'             : '*',
+                    '-dsannotations'        : '*'
+                )
+            }
+        }
+    }
+
+    //
+    // Create Bundle task
+    //
+    task bundle(type: Bundle) {
+        from sourceSets.main.output
+    }
+
+    //
+    // Create TestOSGi and Export tasks for all *.bndrun file
+    //
+    project.projectDir.eachFileMatch({it.endsWith('.bndrun')}, {
+            ext.fullName = it.name
+            ext.bndRunName = fullName.replace('.bndrun', '')
+            task (ext.bndRunName + 'TestOSGi', type: TestOSGi) {
+                bndrun fullName
+            }
+            task (ext.bndRunName + 'Export', type: Export) {
+                bndrun fullName
+                bundlesOnly true
+            }
+        }
+    )
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+            }
+        }
+    }
+}
+
+task wrapper(type: Wrapper) {
+    jarFile = rootProject.file('gradle/wrapper/gradle-wrapper.jar')
+}

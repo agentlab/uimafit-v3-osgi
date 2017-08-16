@@ -1,0 +1,59 @@
+# Dirs With Binaries #
+build/
+bin/
+.gradle/
+libs/
+target/
+classes/
+temp
+
+Thumbs.db
+
+# Eclipse Project Files #
+.classpath
+.project
+build.properties
+.settings/
+
+# Idea Project Files #
+.idea/
+*.iml
+
+# Netbeans project files
+nbactions.xml
+nb-configuration.xml
+
+# Binary Files #
+*.class
+*.dll
+*.lib
+*.exe
+*.obj
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.zip
+*.rar
+*.7z
+*.tar
+
+# Temporary Files #
+*.bak
+
+# Data Files #
+*.dat
+*.idn
+
+# IDEA #
+*.iml
+*.ipr
+*.iws
+.idea/
+atlassian-ide-plugin.xml
+
+# Eclipse #
+.classpath
+.project
+.settings

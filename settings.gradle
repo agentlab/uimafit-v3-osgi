@@ -1,0 +1,12 @@
+rootProject.name = 'org.apache.uima'
+
+rootDir.eachDir() { groupDir ->
+    groupDir.eachDir() { dir ->
+        dir.eachFileMatch({it == 'bnd.bnd'}, {
+            include "$groupDir.name"
+            include "$groupDir.name:$dir.name"
+            project(":$groupDir.name").projectDir = "$rootDir/$groupDir.name" as File
+            project(":$groupDir.name:$dir.name").projectDir = "$rootDir/$groupDir.name/$dir.name" as File
+        })
+    }
+}

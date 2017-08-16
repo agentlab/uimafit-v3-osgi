@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" name="org.apache.uima.fit.osgi.utils.cl.CachingUIMAResourcesClassLoaderRepository">
+   <service>
+      <provide interface="org.apache.uima.fit.osgi.utils.cl.UIMAClassLoaderRepository"/>
+   </service>
+   <implementation class="org.apache.uima.fit.osgi.utils.cl.CachingUIMAResourcesClassLoaderRepository"/>
+</scr:component>
