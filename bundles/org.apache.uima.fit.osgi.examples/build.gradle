@@ -1,0 +1,10 @@
+version '3.0.0'
+
+description = 'Apache UIMA Fit OSGi Examples'
+
+dependencies {
+	compile project(':bundles:org.apache.uima.fit')
+	compile project(':bundles:org.apache.uima.fit.osgi')
+
+    //test scope
+}
