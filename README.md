@@ -8,7 +8,20 @@ Proper OSGi version of the Apache UIMA Fit.
 We are using Gradle as a build system.
 To invoke the full build:
 
-    ./gradlew clean build
+    ./gradlew clean build -x test
+
+## Run Tests in Debugger
+
+    ./gradlew clean test --debug-jvm --info --stacktrace
+
+## Run Specific Test in Debugger
+
+    ./gradlew -Dtest.single=Logging clean test --debug-jvm --info --stacktrace
+
+## Run OSGi Tests
+
+    ./gradlew resolve
+    ./gradlew testOSGi
 
 ## Code convention
 

@@ -1,6 +1,7 @@
 import aQute.bnd.gradle.Bundle
 import aQute.bnd.gradle.Export
 import aQute.bnd.gradle.TestOSGi
+//import aQute.bnd.gradle.Resolve
 
 buildscript {
     repositories {
@@ -87,6 +88,24 @@ subprojects {
     dependencies {
         compileOnly 'org.projectlombok:lombok:1.16.16'
         compileOnly 'org.osgi:org.osgi.annotation:6.0.0'
+		compileOnly 'org.osgi:org.osgi.service.component.annotations:1.3.0'
+
+        compile 'org.apache.uima:uimaj-core:3.0.0-alpha02'
+
+        compile 'org.osgi:org.osgi.framework:1.8.0'
+        compile 'org.osgi:org.osgi.util.tracker:1.5.1'
+        compile 'org.osgi:org.osgi.service.component:1.3.0'
+
+        compile 'org.slf4j:slf4j-api:1.7.24'
+		
+		testCompile 'org.slf4j:jcl-over-slf4j:1.7.24'
+		testCompile 'org.slf4j:log4j-over-slf4j:1.7.24'
+		testCompile 'org.slf4j:jul-to-slf4j:1.7.24'
+		testCompile 'ch.qos.logback:logback-classic:1.2.3'
+
+        testCompile 'junit:junit:4.+'
+        testCompile 'org.springframework:spring-test:3.2.16.RELEASE'
+        testCompile 'xmlunit:xmlunit:1.5'
     }
 
     afterEvaluate { project ->
@@ -131,6 +150,9 @@ subprojects {
                 bndrun fullName
                 bundlesOnly true
             }
+/*            task (ext.bndRunName + 'Resolve', type: Resolve) {
+                bndrun fullName
+            }*/
         }
     )
 
