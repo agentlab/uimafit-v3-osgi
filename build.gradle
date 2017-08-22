@@ -1,6 +1,6 @@
-import aQute.bnd.gradle.Bundle
-import aQute.bnd.gradle.Export
-import aQute.bnd.gradle.TestOSGi
+//import aQute.bnd.gradle.Bundle
+//import aQute.bnd.gradle.Export
+//import aQute.bnd.gradle.TestOSGi
 //import aQute.bnd.gradle.Resolve
 
 buildscript {
@@ -15,7 +15,7 @@ buildscript {
 		mavenLocal()
     }
     dependencies {
-        classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:+'
+//        classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:+'
         classpath 'com.dictanova.jcasgen.gradle:gradle-jcasgen-plugin:3.0'
     }
 }
@@ -78,7 +78,7 @@ subprojects {
 
     apply plugin: 'com.dictanova.jcasgen'
     apply plugin: 'java'
-    apply plugin: 'biz.aQute.bnd.builder'
+//    apply plugin: 'biz.aQute.bnd.builder'
 
     repositories {
         mavenLocal()
@@ -86,9 +86,9 @@ subprojects {
     }
 
     dependencies {
-        compileOnly 'org.projectlombok:lombok:1.16.16'
+        //compileOnly 'org.projectlombok:lombok:1.16.16'
         compileOnly 'org.osgi:org.osgi.annotation:6.0.0'
-		compileOnly 'org.osgi:org.osgi.service.component.annotations:1.3.0'
+        compileOnly 'org.osgi:org.osgi.service.component.annotations:1.3.0'
 
         compile 'org.apache.uima:uimaj-core:3.0.0-alpha02'
 
@@ -97,14 +97,21 @@ subprojects {
         compile 'org.osgi:org.osgi.service.component:1.3.0'
 
         compile 'org.slf4j:slf4j-api:1.7.24'
-		
-		testCompile 'org.slf4j:jcl-over-slf4j:1.7.24'
-		testCompile 'org.slf4j:log4j-over-slf4j:1.7.24'
-		testCompile 'org.slf4j:jul-to-slf4j:1.7.24'
-		testCompile 'ch.qos.logback:logback-classic:1.2.3'
+        compile 'org.slf4j:jcl-over-slf4j:1.7.24'
+        compile 'org.slf4j:log4j-over-slf4j:1.7.24'
+        compile 'org.slf4j:jul-to-slf4j:1.7.24'
+
+        testCompile 'ch.qos.logback:logback-classic:1.2.3'
 
         testCompile 'junit:junit:4.+'
-        testCompile 'org.springframework:spring-test:3.2.16.RELEASE'
+		testCompile ('org.hamcrest:hamcrest-junit:2.0.0.0') {
+			exclude group: 'junit', module: 'junit'
+		}
+		testCompile 'org.assertj:assertj-core:3.8.0'
+		testCompile 'org.mockito:mockito-core:2.8.47'
+        testCompile('org.springframework:spring-test:3.2.16.RELEASE') {
+            exclude group: 'commons-logging', module: 'commons-logging'
+        }
         testCompile 'xmlunit:xmlunit:1.5'
     }
 
@@ -133,14 +140,14 @@ subprojects {
     //
     // Create Bundle task
     //
-    task bundle(type: Bundle) {
+/*    task bundle(type: Bundle) {
         from sourceSets.main.output
-    }
+    }*/
 
     //
     // Create TestOSGi and Export tasks for all *.bndrun file
     //
-    project.projectDir.eachFileMatch({it.endsWith('.bndrun')}, {
+/*    project.projectDir.eachFileMatch({it.endsWith('.bndrun')}, {
             ext.fullName = it.name
             ext.bndRunName = fullName.replace('.bndrun', '')
             task (ext.bndRunName + 'TestOSGi', type: TestOSGi) {
@@ -150,11 +157,11 @@ subprojects {
                 bndrun fullName
                 bundlesOnly true
             }
-/*            task (ext.bndRunName + 'Resolve', type: Resolve) {
+            task (ext.bndRunName + 'Resolve', type: Resolve) {
                 bndrun fullName
-            }*/
+            }
         }
-    )
+    )*/
 
     publishing {
         publications {

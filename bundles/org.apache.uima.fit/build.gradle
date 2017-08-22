@@ -3,12 +3,22 @@ version '3.0.0'
 description = 'Apache UIMA Fit'
 
 dependencies {
-    compile 'commons-lang:commons-lang:2.6'
-    compile 'commons-io:commons-io:2.2'
+    compile('commons-lang:commons-lang:2.6') {
+		exclude group: 'commons-logging', module: 'commons-logging'
+    }
+    compile('commons-io:commons-io:2.2') {
+		exclude group: 'commons-logging', module: 'commons-logging'
+	}
 
-    compile 'org.springframework:spring-core:3.2.16.RELEASE'
-    compile 'org.springframework:spring-context:3.2.16.RELEASE'
-    compile 'org.springframework:spring-beans:3.2.16.RELEASE'
+    compile('org.springframework:spring-core:3.2.16.RELEASE') {
+		exclude group: 'commons-logging', module: 'commons-logging'
+    }
+    compile('org.springframework:spring-context:3.2.16.RELEASE') {
+		exclude group: 'commons-logging', module: 'commons-logging'
+    }
+    compile('org.springframework:spring-beans:3.2.16.RELEASE') {
+		exclude group: 'commons-logging', module: 'commons-logging'
+    }
 
     //test scope
 }

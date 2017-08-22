@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -21,9 +21,17 @@ package org.apache.uima.fit.factory;
 import static org.apache.uima.fit.factory.AnalysisEngineFactory.createEngine;
 import static org.apache.uima.fit.factory.CollectionReaderFactory.createReader;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doAnswer;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.ConsoleHandler;
@@ -31,6 +39,7 @@ import java.util.logging.Filter;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 import org.apache.uima.UIMAFramework;
 import org.apache.uima.UimaContextAdmin;
@@ -59,6 +68,13 @@ import org.apache.uima.util.Progress;
 import org.apache.uima.util.impl.JSR47Logger_impl;
 import org.apache.uima.util.impl.Log4jLogger_impl;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.core.Appender;
 
 public class LoggingTest {
   @Test
@@ -85,7 +101,7 @@ public class LoggingTest {
       UimaContextAdmin ctx = new RootUimaContext_impl();
       ctx.setLogger(JSR47Logger_impl.getInstance());
       ExtendedLogger logger = new ExtendedLogger(ctx);
-           
+
       logger.setLevel(org.apache.uima.util.Level.ALL);
       trigger(logger);
       logger.setLevel(org.apache.uima.util.Level.OFF);
@@ -187,65 +203,68 @@ public class LoggingTest {
   @Test
   public void testAllKindsOfComponents() throws Exception {
     System.out.println("=== testAllKindsOfComponents ===");
-    final List<LogRecord> records = new ArrayList<LogRecord>();
 
     // Tell the logger to log everything
-    ConsoleHandler handler = (ConsoleHandler) LogManager.getLogManager().getLogger("")
-            .getHandlers()[0];
-    java.util.logging.Level oldLevel = handler.getLevel();
-    handler.setLevel(Level.ALL);
-    // Capture the logging output without actually logging it
-    handler.setFilter(new Filter() {
-      public boolean isLoggable(LogRecord record) {
-        records.add(record);
-        System.out.printf("[%s] %s%n", record.getSourceClassName(), record.getMessage());
-        return false;
-      }
-    });
-    
+    final ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+    final Appender<ILoggingEvent> mockAppender = mock(Appender.class);
+    when(mockAppender.getName()).thenReturn("MOCK");
+    doAnswer(invocation -> {
+          Object[] args = invocation.getArguments();
+          System.out.println("called with arguments: " + Arrays.toString(args));
+          return null;
+        }
+    ).when(mockAppender).doAppend(any());
+    root.addAppender(mockAppender);
+
+    final ch.qos.logback.classic.Level oldLevel = root.getLevel();
+    //root.setLevel(ch.qos.logback.classic.Level.INFO);
     UIMAFramework.getLogger().setLevel(org.apache.uima.util.Level.INFO);
 
     try {
       JCas jcas = JCasFactory.createJCas();
 
       createReader(LoggingCasCollectionReader.class).hasNext();
-      assertLogDone(records);
+      assertLogDone(mockAppender);
 
       createReader(LoggingJCasCollectionReader.class).hasNext();
-      assertLogDone(records);
+      assertLogDone(mockAppender);
 
       // createFlowControllerDescription(LoggingJCasFlowController.class).
-      // assertLogDone(records);
+      // assertLogDone(mockAppender);
 
       createEngine(LoggingCasAnnotator.class).process(jcas.getCas());
-      assertLogDone(records);
+      assertLogDone(mockAppender);
 
       createEngine(LoggingJCasAnnotator.class).process(jcas);
-      assertLogDone(records);
+      assertLogDone(mockAppender);
 
       createEngine(LoggingCasConsumer.class).process(jcas.getCas());
-      assertLogDone(records);
+      assertLogDone(mockAppender);
 
       createEngine(LoggingJCasConsumer.class).process(jcas);
-      assertLogDone(records);
+      assertLogDone(mockAppender);
 
       createEngine(LoggingCasMultiplier.class).process(jcas.getCas());
-      assertLogDone(records);
+      assertLogDone(mockAppender);
 
       createEngine(LoggingJCasMultiplier.class).process(jcas);
-      assertLogDone(records);
+      assertLogDone(mockAppender);
     } finally {
       if (oldLevel != null) {
-        handler.setLevel(oldLevel);
-        handler.setFilter(null);
+    	root.setLevel(oldLevel);
       }
+      root.detachAppender(mockAppender);
     }
   }
 
-  private void assertLogDone(List<LogRecord> records) {
-    assertEquals(1, records.size());
-    assertEquals(Level.INFO, records.get(0).getLevel());
-    records.clear();
+  private void assertLogDone(Appender<ILoggingEvent> mockAppender) {
+    verify(mockAppender).doAppend(
+
+      argThat(argument -> {
+    	  return ((LoggingEvent) argument).getLevel() == ch.qos.logback.classic.Level.INFO;
+      })
+    );
+    clearInvocations(mockAppender);
   }
 
   public static class LoggingCasMultiplier extends CasMultiplier_ImplBase {

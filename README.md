@@ -17,6 +17,7 @@ To invoke the full build:
 ## Run Specific Test in Debugger
 
     ./gradlew -Dtest.single=Logging clean test --debug-jvm --info --stacktrace
+    gradle -Dtest.single=Logging* test
 
 ## Run OSGi Tests
 
