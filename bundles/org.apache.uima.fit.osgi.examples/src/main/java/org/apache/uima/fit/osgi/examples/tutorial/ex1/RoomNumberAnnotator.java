@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.uima.fit.examples.tutorial.ex1;
+package org.apache.uima.fit.osgi.examples.tutorial.ex1;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.descriptor.TypeCapability;
-import org.apache.uima.fit.examples.tutorial.type.RoomNumber;
+import org.apache.uima.fit.osgi.examples.tutorial.type.RoomNumber;
 import org.apache.uima.jcas.JCas;
 
 /**

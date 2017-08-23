@@ -3,7 +3,7 @@
    
 /* Apache UIMA v3 - First created by JCasGen Fri Jul 21 17:28:28 MSK 2017 */
 
-package org.apache.uima.fit.examples.tutorial.type;
+package org.apache.uima.fit.osgi.examples.tutorial.type;
 
 import org.apache.uima.cas.impl.CASImpl;
 import org.apache.uima.cas.impl.TypeImpl;

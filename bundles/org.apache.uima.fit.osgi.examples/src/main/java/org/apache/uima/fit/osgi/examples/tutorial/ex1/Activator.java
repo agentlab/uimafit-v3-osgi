@@ -1,4 +1,4 @@
-package org.apache.uima.fit.examples.tutorial.ex1;
+package org.apache.uima.fit.osgi.examples.tutorial.ex1;
 
 import static org.apache.uima.fit.osgi.utils.AnalysisEngineFactoryOSGi.createEngine;
 import static org.apache.uima.fit.util.JCasUtil.select;
@@ -9,8 +9,8 @@ import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.TypeSystem;
 import org.apache.uima.cas.admin.TypeSystemMgr;
 import org.apache.uima.cas.impl.FSClassRegistry;
-import org.apache.uima.fit.examples.tutorial.type.RoomNumber;
 import org.apache.uima.fit.internal.ResourceManagerFactory;
+import org.apache.uima.fit.osgi.examples.tutorial.type.RoomNumber;
 import org.apache.uima.fit.osgi.utils.UIMABundleActivator;
 import org.apache.uima.fit.osgi.utils.cl.ClerezzaUIMAExtensionClassLoader;
 import org.apache.uima.fit.osgi.utils.cl.UIMAClassLoaderRepository;

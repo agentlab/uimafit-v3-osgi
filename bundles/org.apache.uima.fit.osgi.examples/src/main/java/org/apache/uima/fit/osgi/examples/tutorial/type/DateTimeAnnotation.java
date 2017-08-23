@@ -1,9 +1,9 @@
 
 
    
-/* Apache UIMA v3 - First created by JCasGen Fri Jul 21 17:55:45 MSK 2017 */
+/* Apache UIMA v3 - First created by JCasGen Fri Jul 21 17:28:28 MSK 2017 */
 
-package org.apache.uima.fit.examples.type;
+package org.apache.uima.fit.osgi.examples.tutorial.type;
 
 import org.apache.uima.cas.impl.CASImpl;
 import org.apache.uima.cas.impl.TypeImpl;
@@ -16,22 +16,22 @@ import org.apache.uima.jcas.tcas.Annotation;
 
 
 /** 
- * Updated by JCasGen Fri Jul 21 17:55:45 MSK 2017
+ * Updated by JCasGen Fri Jul 21 17:28:28 MSK 2017
  * XML source: C:/git/uimafit-v3-tmp/uimafit-examples/target/jcasgen/typesystem.xml
  * @generated */
-public class Token extends Annotation {
+public class DateTimeAnnotation extends Annotation {
  
   /** @generated
    * @ordered 
    */
   @SuppressWarnings ("hiding")
-  public final static String _TypeName = "org.apache.uima.fit.examples.type.Token";
+  public final static String _TypeName = "org.apache.uima.fit.examples.tutorial.type.DateTimeAnnotation";
   
   /** @generated
    * @ordered 
    */
   @SuppressWarnings ("hiding")
-  public final static int typeIndexID = JCasRegistry.register(Token.class);
+  public final static int typeIndexID = JCasRegistry.register(DateTimeAnnotation.class);
   /** @generated
    * @ordered 
    */
@@ -48,23 +48,23 @@ public class Token extends Annotation {
    *   Feature Offsets *
    * *******************/ 
    
-  public final static String _FeatName_pos = "pos";
+  public final static String _FeatName_shortDateString = "shortDateString";
 
 
   /* Feature Adjusted Offsets */
-  public final static int _FI_pos = TypeSystemImpl.getAdjustedFeatureOffset("pos");
+  public final static int _FI_shortDateString = TypeSystemImpl.getAdjustedFeatureOffset("shortDateString");
 
    
   /** Never called.  Disable default constructor
    * @generated */
-  protected Token() {/* intentionally empty block */}
+  protected DateTimeAnnotation() {/* intentionally empty block */}
     
   /** Internal - constructor used by generator 
    * @generated
    * @param casImpl the CAS this Feature Structure belongs to
    * @param type the type of this Feature Structure 
    */
-  public Token(TypeImpl type, CASImpl casImpl) {
+  public DateTimeAnnotation(TypeImpl type, CASImpl casImpl) {
     super(type, casImpl);
     readObject();
   }
@@ -72,7 +72,7 @@ public class Token extends Annotation {
   /** @generated
    * @param jcas JCas to which this Feature Structure belongs 
    */
-  public Token(JCas jcas) {
+  public DateTimeAnnotation(JCas jcas) {
     super(jcas);
     readObject();   
   } 
@@ -83,7 +83,7 @@ public class Token extends Annotation {
    * @param begin offset to the begin spot in the SofA
    * @param end offset to the end spot in the SofA 
   */  
-  public Token(JCas jcas, int begin, int end) {
+  public DateTimeAnnotation(JCas jcas, int begin, int end) {
     super(jcas);
     setBegin(begin);
     setEnd(end);
@@ -102,20 +102,20 @@ public class Token extends Annotation {
  
     
   //*--------------*
-  //* Feature: pos
+  //* Feature: shortDateString
 
-  /** getter for pos - gets 
+  /** getter for shortDateString - gets 
    * @generated
    * @return value of the feature 
    */
-  public String getPos() { return _getStringValueNc(_FI_pos);}
+  public String getShortDateString() { return _getStringValueNc(_FI_shortDateString);}
     
-  /** setter for pos - sets  
+  /** setter for shortDateString - sets  
    * @generated
    * @param v value to set into the feature 
    */
-  public void setPos(String v) {
-    _setStringValueNfc(_FI_pos, v);
+  public void setShortDateString(String v) {
+    _setStringValueNfc(_FI_shortDateString, v);
   }    
     
   }

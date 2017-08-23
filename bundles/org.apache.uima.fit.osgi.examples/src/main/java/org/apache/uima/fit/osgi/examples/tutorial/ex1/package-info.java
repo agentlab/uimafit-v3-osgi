@@ -19,5 +19,5 @@
 /**
  * Example for using the {@link org.apache.uima.fit.descriptor.TypeCapability} annotation.
  */
-package org.apache.uima.fit.examples.tutorial.ex1;
+package org.apache.uima.fit.osgi.examples.tutorial.ex1;
 

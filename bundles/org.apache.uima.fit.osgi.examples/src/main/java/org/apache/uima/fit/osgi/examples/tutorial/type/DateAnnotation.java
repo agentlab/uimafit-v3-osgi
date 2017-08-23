@@ -3,7 +3,7 @@
    
 /* Apache UIMA v3 - First created by JCasGen Fri Jul 21 17:28:28 MSK 2017 */
 
-package org.apache.uima.fit.examples.tutorial.type;
+package org.apache.uima.fit.osgi.examples.tutorial.type;
 
 import org.apache.uima.cas.impl.CASImpl;
 import org.apache.uima.cas.impl.TypeImpl;
@@ -18,19 +18,19 @@ import org.apache.uima.jcas.JCasRegistry;
  * Updated by JCasGen Fri Jul 21 17:28:28 MSK 2017
  * XML source: C:/git/uimafit-v3-tmp/uimafit-examples/target/jcasgen/typesystem.xml
  * @generated */
-public class TimeAnnotation extends DateTimeAnnotation {
+public class DateAnnotation extends DateTimeAnnotation {
  
   /** @generated
    * @ordered 
    */
   @SuppressWarnings ("hiding")
-  public final static String _TypeName = "org.apache.uima.fit.examples.tutorial.type.TimeAnnotation";
+  public final static String _TypeName = "org.apache.uima.fit.examples.tutorial.type.DateAnnotation";
   
   /** @generated
    * @ordered 
    */
   @SuppressWarnings ("hiding")
-  public final static int typeIndexID = JCasRegistry.register(TimeAnnotation.class);
+  public final static int typeIndexID = JCasRegistry.register(DateAnnotation.class);
   /** @generated
    * @ordered 
    */
@@ -54,14 +54,14 @@ public class TimeAnnotation extends DateTimeAnnotation {
    
   /** Never called.  Disable default constructor
    * @generated */
-  protected TimeAnnotation() {/* intentionally empty block */}
+  protected DateAnnotation() {/* intentionally empty block */}
     
   /** Internal - constructor used by generator 
    * @generated
    * @param casImpl the CAS this Feature Structure belongs to
    * @param type the type of this Feature Structure 
    */
-  public TimeAnnotation(TypeImpl type, CASImpl casImpl) {
+  public DateAnnotation(TypeImpl type, CASImpl casImpl) {
     super(type, casImpl);
     readObject();
   }
@@ -69,7 +69,7 @@ public class TimeAnnotation extends DateTimeAnnotation {
   /** @generated
    * @param jcas JCas to which this Feature Structure belongs 
    */
-  public TimeAnnotation(JCas jcas) {
+  public DateAnnotation(JCas jcas) {
     super(jcas);
     readObject();   
   } 
@@ -80,7 +80,7 @@ public class TimeAnnotation extends DateTimeAnnotation {
    * @param begin offset to the begin spot in the SofA
    * @param end offset to the end spot in the SofA 
   */  
-  public TimeAnnotation(JCas jcas, int begin, int end) {
+  public DateAnnotation(JCas jcas, int begin, int end) {
     super(jcas);
     setBegin(begin);
     setEnd(end);

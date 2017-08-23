@@ -3,7 +3,7 @@
    
 /* Apache UIMA v3 - First created by JCasGen Fri Jul 21 17:28:28 MSK 2017 */
 
-package org.apache.uima.fit.examples.tutorial.type;
+package org.apache.uima.fit.osgi.examples.tutorial.type;
 
 import org.apache.uima.cas.impl.CASImpl;
 import org.apache.uima.cas.impl.TypeImpl;
@@ -19,19 +19,19 @@ import org.apache.uima.jcas.tcas.Annotation;
  * Updated by JCasGen Fri Jul 21 17:28:28 MSK 2017
  * XML source: C:/git/uimafit-v3-tmp/uimafit-examples/target/jcasgen/typesystem.xml
  * @generated */
-public class DateTimeAnnotation extends Annotation {
+public class UimaAcronym extends Annotation {
  
   /** @generated
    * @ordered 
    */
   @SuppressWarnings ("hiding")
-  public final static String _TypeName = "org.apache.uima.fit.examples.tutorial.type.DateTimeAnnotation";
+  public final static String _TypeName = "org.apache.uima.fit.examples.tutorial.type.UimaAcronym";
   
   /** @generated
    * @ordered 
    */
   @SuppressWarnings ("hiding")
-  public final static int typeIndexID = JCasRegistry.register(DateTimeAnnotation.class);
+  public final static int typeIndexID = JCasRegistry.register(UimaAcronym.class);
   /** @generated
    * @ordered 
    */
@@ -48,23 +48,23 @@ public class DateTimeAnnotation extends Annotation {
    *   Feature Offsets *
    * *******************/ 
    
-  public final static String _FeatName_shortDateString = "shortDateString";
+  public final static String _FeatName_expandedForm = "expandedForm";
 
 
   /* Feature Adjusted Offsets */
-  public final static int _FI_shortDateString = TypeSystemImpl.getAdjustedFeatureOffset("shortDateString");
+  public final static int _FI_expandedForm = TypeSystemImpl.getAdjustedFeatureOffset("expandedForm");
 
    
   /** Never called.  Disable default constructor
    * @generated */
-  protected DateTimeAnnotation() {/* intentionally empty block */}
+  protected UimaAcronym() {/* intentionally empty block */}
     
   /** Internal - constructor used by generator 
    * @generated
    * @param casImpl the CAS this Feature Structure belongs to
    * @param type the type of this Feature Structure 
    */
-  public DateTimeAnnotation(TypeImpl type, CASImpl casImpl) {
+  public UimaAcronym(TypeImpl type, CASImpl casImpl) {
     super(type, casImpl);
     readObject();
   }
@@ -72,7 +72,7 @@ public class DateTimeAnnotation extends Annotation {
   /** @generated
    * @param jcas JCas to which this Feature Structure belongs 
    */
-  public DateTimeAnnotation(JCas jcas) {
+  public UimaAcronym(JCas jcas) {
     super(jcas);
     readObject();   
   } 
@@ -83,7 +83,7 @@ public class DateTimeAnnotation extends Annotation {
    * @param begin offset to the begin spot in the SofA
    * @param end offset to the end spot in the SofA 
   */  
-  public DateTimeAnnotation(JCas jcas, int begin, int end) {
+  public UimaAcronym(JCas jcas, int begin, int end) {
     super(jcas);
     setBegin(begin);
     setEnd(end);
@@ -102,20 +102,20 @@ public class DateTimeAnnotation extends Annotation {
  
     
   //*--------------*
-  //* Feature: shortDateString
+  //* Feature: expandedForm
 
-  /** getter for shortDateString - gets 
+  /** getter for expandedForm - gets 
    * @generated
    * @return value of the feature 
    */
-  public String getShortDateString() { return _getStringValueNc(_FI_shortDateString);}
+  public String getExpandedForm() { return _getStringValueNc(_FI_expandedForm);}
     
-  /** setter for shortDateString - sets  
+  /** setter for expandedForm - sets  
    * @generated
    * @param v value to set into the feature 
    */
-  public void setShortDateString(String v) {
-    _setStringValueNfc(_FI_shortDateString, v);
+  public void setExpandedForm(String v) {
+    _setStringValueNfc(_FI_expandedForm, v);
   }    
     
   }
