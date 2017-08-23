@@ -31,7 +31,6 @@ import static org.mockito.Mockito.doAnswer;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.ConsoleHandler;
@@ -39,7 +38,6 @@ import java.util.logging.Filter;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 
 import org.apache.uima.UIMAFramework;
 import org.apache.uima.UimaContextAdmin;
@@ -66,12 +64,12 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.ResourceSpecifier;
 import org.apache.uima.util.Progress;
 import org.apache.uima.util.impl.JSR47Logger_impl;
-import org.apache.uima.util.impl.Log4jLogger_impl;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.slf4j.LoggerFactory;
 
+import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
@@ -205,61 +203,73 @@ public class LoggingTest {
     System.out.println("=== testAllKindsOfComponents ===");
 
     // Tell the logger to log everything
-    final ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+    final Logger rootLogger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     final Appender<ILoggingEvent> mockAppender = mock(Appender.class);
     when(mockAppender.getName()).thenReturn("MOCK");
-    doAnswer(invocation -> {
+    /*doAnswer(invocation -> {
           Object[] args = invocation.getArguments();
-          System.out.println("called with arguments: " + Arrays.toString(args));
+          System.out.println(Arrays.toString(args));
           return null;
         }
-    ).when(mockAppender).doAppend(any());
-    root.addAppender(mockAppender);
+    ).when(mockAppender).doAppend(any());*/
+    rootLogger.addAppender(mockAppender);
 
-    final ch.qos.logback.classic.Level oldLevel = root.getLevel();
-    //root.setLevel(ch.qos.logback.classic.Level.INFO);
-    UIMAFramework.getLogger().setLevel(org.apache.uima.util.Level.INFO);
+    final ch.qos.logback.classic.Level oldLevel = rootLogger.getLevel();
+    rootLogger.setLevel(ch.qos.logback.classic.Level.WARN);
+    UIMAFramework.getLogger().setLevel(org.apache.uima.util.Level.WARN);
+
+    final Logger fitLogger = (Logger) LoggerFactory.getLogger("org.apache.uima.fit");
+    fitLogger.setLevel(ch.qos.logback.classic.Level.INFO);
 
     try {
+      System.out.println("JCasFactory.createJCas");
       JCas jcas = JCasFactory.createJCas();
 
+      System.out.println("LoggingCasCollectionReader");
       createReader(LoggingCasCollectionReader.class).hasNext();
       assertLogDone(mockAppender);
 
+      System.out.println("LoggingJCasCollectionReader");
       createReader(LoggingJCasCollectionReader.class).hasNext();
       assertLogDone(mockAppender);
 
+      // System.out.println("LoggingJCasFlowController");
       // createFlowControllerDescription(LoggingJCasFlowController.class).
       // assertLogDone(mockAppender);
 
+      System.out.println("LoggingCasAnnotator");
       createEngine(LoggingCasAnnotator.class).process(jcas.getCas());
       assertLogDone(mockAppender);
 
+      System.out.println("LoggingJCasAnnotator");
       createEngine(LoggingJCasAnnotator.class).process(jcas);
       assertLogDone(mockAppender);
 
+      System.out.println("LoggingCasConsumer");
       createEngine(LoggingCasConsumer.class).process(jcas.getCas());
       assertLogDone(mockAppender);
 
+      System.out.println("LoggingJCasConsumer");
       createEngine(LoggingJCasConsumer.class).process(jcas);
       assertLogDone(mockAppender);
 
+      System.out.println("LoggingCasMultiplier");
       createEngine(LoggingCasMultiplier.class).process(jcas.getCas());
       assertLogDone(mockAppender);
 
+      System.out.println("LoggingJCasMultiplier");
       createEngine(LoggingJCasMultiplier.class).process(jcas);
       assertLogDone(mockAppender);
     } finally {
       if (oldLevel != null) {
-    	root.setLevel(oldLevel);
+    	rootLogger.setLevel(oldLevel);
       }
-      root.detachAppender(mockAppender);
+      rootLogger.detachAppender(mockAppender);
     }
   }
 
   private void assertLogDone(Appender<ILoggingEvent> mockAppender) {
     verify(mockAppender).doAppend(
-
       argThat(argument -> {
     	  return ((LoggingEvent) argument).getLevel() == ch.qos.logback.classic.Level.INFO;
       })

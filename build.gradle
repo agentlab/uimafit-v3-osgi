@@ -1,7 +1,7 @@
-//import aQute.bnd.gradle.Bundle
-//import aQute.bnd.gradle.Export
-//import aQute.bnd.gradle.TestOSGi
-//import aQute.bnd.gradle.Resolve
+import aQute.bnd.gradle.Bundle
+import aQute.bnd.gradle.Export
+import aQute.bnd.gradle.TestOSGi
+import aQute.bnd.gradle.Resolve
 
 buildscript {
     repositories {
@@ -15,14 +15,11 @@ buildscript {
 		mavenLocal()
     }
     dependencies {
-//        classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:+'
+        classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:+'
+		classpath 'biz.aQute.bnd:biz.aQute.tester:+'
         classpath 'com.dictanova.jcasgen.gradle:gradle-jcasgen-plugin:3.0'
     }
 }
-
-//plugins {
-//    id "com.dictanova.jcasgen" version "3.0"
-//}
 
 version '3.0.0'
 description = 'Apache UIMA Fit project'
@@ -78,7 +75,7 @@ subprojects {
 
     apply plugin: 'com.dictanova.jcasgen'
     apply plugin: 'java'
-//    apply plugin: 'biz.aQute.bnd.builder'
+    apply plugin: 'biz.aQute.bnd.builder'
 
     repositories {
         mavenLocal()
@@ -86,9 +83,9 @@ subprojects {
     }
 
     dependencies {
-        //compileOnly 'org.projectlombok:lombok:1.16.16'
         compileOnly 'org.osgi:org.osgi.annotation:6.0.0'
         compileOnly 'org.osgi:org.osgi.service.component.annotations:1.3.0'
+		compileOnly 'org.osgi:osgi.cmpn:6.+'
 
         compile 'org.apache.uima:uimaj-core:3.0.0-alpha02'
 
@@ -101,12 +98,27 @@ subprojects {
         compile 'org.slf4j:log4j-over-slf4j:1.7.24'
         compile 'org.slf4j:jul-to-slf4j:1.7.24'
 
+		compile 'org.apache.felix:org.apache.felix.gogo.shell:1.+'
+		compile 'org.apache.felix:org.apache.felix.gogo.command:1.+'
+		compile 'org.apache.felix:org.apache.felix.scr:2.+'
+		compile 'org.apache.felix:org.apache.felix.http.jetty:3.+'
+		compile 'org.apache.felix:org.apache.felix.http.servlet-api:1.+'
+		compile 'org.apache.felix:org.apache.felix.configadmin:1.+'
+		compile 'org.apache.felix:org.apache.felix.eventadmin:1.+'
+		compile 'org.apache.felix:org.apache.felix.metatype:1.+'
+		compile 'org.apache.felix:org.apache.felix.log:1.+'
+		compile 'org.apache.felix:org.apache.felix.webconsole:4.+'
+		compile 'org.apache.felix:org.apache.felix.framework:5.+'
+
         testCompile 'ch.qos.logback:logback-classic:1.2.3'
 
-        testCompile 'junit:junit:4.+'
+        /*testCompile 'junit:junit:4.+'
 		testCompile ('org.hamcrest:hamcrest-junit:2.0.0.0') {
 			exclude group: 'junit', module: 'junit'
-		}
+		}*/
+		compile 'org.osgi:osgi.enroute.hamcrest.wrapper:1.3.0'
+		compile 'org.osgi:osgi.enroute.junit.wrapper:4.12.0'
+
 		testCompile 'org.assertj:assertj-core:3.8.0'
 		testCompile 'org.mockito:mockito-core:2.8.47'
         testCompile('org.springframework:spring-test:3.2.16.RELEASE') {
@@ -140,14 +152,14 @@ subprojects {
     //
     // Create Bundle task
     //
-/*    task bundle(type: Bundle) {
+    task bundle(type: Bundle) {
         from sourceSets.main.output
-    }*/
+    }
 
     //
     // Create TestOSGi and Export tasks for all *.bndrun file
     //
-/*    project.projectDir.eachFileMatch({it.endsWith('.bndrun')}, {
+    project.projectDir.eachFileMatch({it.endsWith('.bndrun')}, {
             ext.fullName = it.name
             ext.bndRunName = fullName.replace('.bndrun', '')
             task (ext.bndRunName + 'TestOSGi', type: TestOSGi) {
@@ -161,7 +173,7 @@ subprojects {
                 bndrun fullName
             }
         }
-    )*/
+    )
 
     publishing {
         publications {
