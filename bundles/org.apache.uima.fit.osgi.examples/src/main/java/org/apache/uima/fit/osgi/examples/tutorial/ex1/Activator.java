@@ -35,10 +35,13 @@ public class Activator extends UIMABundleActivator {
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
 	 */
 	@Activate
+	@Override
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 
-		String text = "The meeting was moved from Yorktown 01-144 to Hawthorne 1S-W33.";
+		System.out.println("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
+
+		/*String text = "The meeting was moved from Yorktown 01-144 to Hawthorne 1S-W33.";
 
 		FSClassRegistry ff;
 
@@ -63,7 +66,7 @@ public class Activator extends UIMABundleActivator {
 
 	    for (RoomNumber roomNumber : select(jCas, RoomNumber.class)) {
 	      System.out.println(roomNumber.getCoveredText() + "\tbuilding = " + roomNumber.getBuilding());
-	    }
+	    }*/
 	}
 
 	protected void classRegistered() {

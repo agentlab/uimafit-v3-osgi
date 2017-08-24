@@ -8,8 +8,6 @@
 	-Dorg.osgi.service.http.port=9090, \
 	-Dfelix.fileinstall.poll=500, \
 	-Dfelix.fileinstall.dir=${.}/load
--runpath: \
-    org.apache.uima:uimaj-core:3.0.0-alpha02
 -runrequires: \
 	osgi.identity;filter:='(osgi.identity=org.apache.felix.scr)', \
 	osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.shell)', \

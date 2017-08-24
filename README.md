@@ -8,24 +8,27 @@ Proper OSGi version of the Apache UIMA Fit.
 We are using Gradle as a build system.
 To invoke the full build:
 
-    ./gradlew launchResolve
+    ./gradlew resolve.debug
     ./gradlew clean build -x test
 
 ## Run Tests in Debugger
 
-    ./gradlew launchResolve
+    ./gradlew resolve.debug
     ./gradlew clean test --debug-jvm --info --stacktrace
 
 ## Run Specific Test in Debugger
 
-    ./gradlew launchResolve
+    ./gradlew resolve.debug
     ./gradlew -Dtest.single=Logging clean test --debug-jvm --info --stacktrace
     gradle -Dtest.single=Logging* test
 
 ## Run OSGi Tests
 
-    ./gradlew launchResolve
-    ./gradlew testOSGi
+    gradle clean assemble testClasses
+    gradle resolve.debug
+    gradle testOSGi.debug
+
+http://127.0.0.1:9090/system/console
 
 ## Code convention
 
