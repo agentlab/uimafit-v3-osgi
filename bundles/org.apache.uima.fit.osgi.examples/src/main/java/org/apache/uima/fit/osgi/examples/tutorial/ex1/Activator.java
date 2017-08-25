@@ -1,6 +1,5 @@
 package org.apache.uima.fit.osgi.examples.tutorial.ex1;
 
-import static org.apache.uima.fit.osgi.utils.AnalysisEngineFactoryOSGi.createEngine;
 import static org.apache.uima.fit.util.JCasUtil.select;
 
 import org.apache.uima.UIMAFramework;
@@ -8,7 +7,6 @@ import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.cas.CAS;
 import org.apache.uima.cas.TypeSystem;
 import org.apache.uima.cas.admin.TypeSystemMgr;
-import org.apache.uima.cas.impl.FSClassRegistry;
 import org.apache.uima.fit.internal.ResourceManagerFactory;
 import org.apache.uima.fit.osgi.examples.tutorial.type.RoomNumber;
 import org.apache.uima.fit.osgi.utils.UIMABundleActivator;
@@ -38,12 +36,25 @@ public class Activator extends UIMABundleActivator {
 	@Override
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-
 		System.out.println("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
+		original();
+	}
 
-		/*String text = "The meeting was moved from Yorktown 01-144 to Hawthorne 1S-W33.";
+	protected void original() throws Exception {
+	    String text = "The meeting was moved from Yorktown 01-144 to Hawthorne 1S-W33.";
 
-		FSClassRegistry ff;
+	    AnalysisEngine analysisEngine = org.apache.uima.fit.factory.AnalysisEngineFactory.createEngine(RoomNumberAnnotator.class);
+	    JCas jCas = analysisEngine.newJCas();
+	    jCas.setDocumentText(text);
+	    analysisEngine.process(jCas);
+
+	    for (RoomNumber roomNumber : select(jCas, RoomNumber.class)) {
+	      System.out.println(roomNumber.getCoveredText() + "\tbuilding = " + roomNumber.getBuilding());
+	    }
+	}
+
+	protected void modified() throws Exception {
+		String text = "The meeting was moved from Yorktown 01-144 to Hawthorne 1S-W33.";
 
 		ResourceManager resourceManager = ResourceManagerFactory.newResourceManager();
 	    ClassLoader cl = getClass().getClassLoader();
@@ -53,12 +64,11 @@ public class Activator extends UIMABundleActivator {
 	    //List<TypeSystemDescription> tsdList = new ArrayList<TypeSystemDescription>();
 	    //TypeSystemDescription tsd = mergeTypeSystems(tsdList, resourceManager);
 
-	    AnalysisEngine analysisEngine = createEngine(RoomNumberAnnotator.class, resourceManager);
+	    AnalysisEngine analysisEngine = org.apache.uima.fit.osgi.utils.AnalysisEngineFactoryOSGi.createEngine(RoomNumberAnnotator.class, resourceManager);
 
 	    JCas jCas = analysisEngine.newJCas();
 	    jCas.setDocumentText(text);
 
-	    //jCas.
 	    //jCas.getCasImpl().commitTypeSystem();
 
 	    //initTypeSystem(tsd, jCas);
@@ -66,7 +76,7 @@ public class Activator extends UIMABundleActivator {
 
 	    for (RoomNumber roomNumber : select(jCas, RoomNumber.class)) {
 	      System.out.println(roomNumber.getCoveredText() + "\tbuilding = " + roomNumber.getBuilding());
-	    }*/
+	    }
 	}
 
 	protected void classRegistered() {
