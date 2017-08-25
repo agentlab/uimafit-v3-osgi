@@ -5,16 +5,13 @@ import aQute.bnd.gradle.Resolve
 
 buildscript {
     repositories {
-        maven {
+       maven {
             url 'https://plugins.gradle.org/m2/'
         }
         maven {
             url 'https://bndtools.ci.cloudbees.com/job/bnd.master/lastSuccessfulBuild/artifact/dist/bundles'
         }
 		jcenter()
-		maven {
-			url 'http://er172-vm-1.tc.test:8090/maven/nlp-uima/'
-		}
 		mavenLocal()
     }
     dependencies {
@@ -83,6 +80,12 @@ subprojects {
     repositories {
         mavenLocal()
 		mavenCentral()
+		maven {
+			url 'http://repo.spring.io/plugins-release'
+		}
+		maven {
+			url 'http://er172-vm-1.tc.test:8090/maven/nlp-uima/'
+		}
     }
 
     dependencies {
@@ -104,6 +107,7 @@ subprojects {
         compile 'org.slf4j:jcl-over-slf4j:1.7.25'
         compile 'org.slf4j:log4j-over-slf4j:1.7.25'
         compile 'org.slf4j:jul-to-slf4j:1.7.25'
+		compile 'ch.qos.logback:logback-classic:1.2.3'
 
 		compile 'org.apache.felix:org.apache.felix.gogo.shell:1.+'
 		compile 'org.apache.felix:org.apache.felix.gogo.command:1.+'
@@ -123,8 +127,12 @@ subprojects {
 		runtime 'org.osgi:osgi.enroute.web.simple.provider:+'
 		runtime 'org.osgi:osgi.enroute.dtos.bndlib.provider:+'
 		runtime 'biz.aQute.bnd:biz.aQute.bndlib:+'
-
-        compile 'ch.qos.logback:logback-classic:1.2.3'
+		runtime 'org.json:com.springsource.org.json:1.0.0'
+		runtime 'org.apache.felix:org.apache.felix.coordinator:1.0.2'
+		runtime 'org.osgi:org.osgi.service.event:1.3.1'
+		runtime 'org.osgi:org.osgi.service.metatype:1.3.0'
+		runtime 'org.osgi:osgi.enroute.logger.simple.provider:+'
+		runtime 'org.osgi:osgi.enroute.executor.simple.provider:+'
 
 		compile('commons-lang:commons-lang:2.6') {
 			exclude group: 'commons-logging', module: 'commons-logging'
