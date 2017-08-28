@@ -169,11 +169,12 @@ subprojects {
             manifest {
                 attributes(
                     'Bundle-Vendor'         : 'https://www.agentlab.ru',
-                    'Bundle-Version'        : "${project.version}",//3.0.0.2345
+                    'Bundle-Version'        : "${project.version}",
                     'Bundle-Description'    : "${project.description}",
                     'Bundle-Copyright'      : 'AgentLab (c)',
-                    'Bundle-License'        : 'https://www.gnu.org/licenses/lgpl.html',
+                    'Bundle-License'        : 'https://www.apache.org/licenses/LICENSE-2.0',
                     'Bundle-ContactAddress' : 'amivanoff@gmail.com',
+					'Require-Bundle'        : 'org.apache.uima.runtime',
                     'Export-Package'        : "${project.name}.*",
                     '-sources'              : 'false', // Not include sources into bundle
                     '-removeheaders'        : 'Provide-Capability, Require-Capability',

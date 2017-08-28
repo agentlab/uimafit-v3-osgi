@@ -18,22 +18,18 @@
 	under the License.
 -->
 <typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
-  <name>Token</name>
+  <name>DateAnnotaton</name>
   <description/>
   <version>1.0</version>
   <vendor/>
+  <imports>
+    <import name="org.apache.uima.fit.osgi.examples.tutorial.type.DateTimeAnnotation"/>
+  </imports>
   <types>
     <typeDescription>
-      <name>org.apache.uima.fit.examples.type.Token</name>
+      <name>org.apache.uima.fit.osgi.examples.tutorial.type.TimeAnnotation</name>
       <description/>
-      <supertypeName>uima.tcas.Annotation</supertypeName>
-      <features>
-        <featureDescription>
-          <name>pos</name>
-          <description/>
-          <rangeTypeName>uima.cas.String</rangeTypeName>
-        </featureDescription>
-      </features>
+      <supertypeName>org.apache.uima.fit.osgi.examples.tutorial.type.DateTimeAnnotation</supertypeName>
     </typeDescription>
   </types>
 </typeSystemDescription>

@@ -24,7 +24,7 @@
   <vendor/>
   <types>
     <typeDescription>
-      <name>org.apache.uima.fit.examples.tutorial.type.RoomNumber</name>
+      <name>org.apache.uima.fit.osgi.examples.tutorial.type.RoomNumber</name>
       <description/>
       <supertypeName>uima.tcas.Annotation</supertypeName>
       <features>

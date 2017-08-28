@@ -1,4 +1,3 @@
-package org.apache.uima.fit.osgi.impl;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -7,9 +6,9 @@ package org.apache.uima.fit.osgi.impl;
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
+ * 
  *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -17,7 +16,7 @@ package org.apache.uima.fit.osgi.impl;
  * specific language governing permissions and limitations
  * under the License.
  */
-
+package org.apache.uima.fit.osgi.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,7 +47,7 @@ public final class MetaDataUtil {
 
   /**
    * Scan patterns from manifest files and from the specified system property.
-   *
+   * 
    * @param aType
    *          the type of metadata to scan for
    * @return array or all patterns found.
@@ -83,7 +82,7 @@ public final class MetaDataUtil {
 
   /**
    * Resolve a list of patterns to a set of URLs.
-   *
+   * 
    * @param patterns
    *          the patterns to resolve
    * @return an array of locations.
@@ -111,7 +110,7 @@ public final class MetaDataUtil {
 
   /**
    * Get manifest locations for the specified type.
-   *
+   * 
    * @param aType
    *          the type of metadata to scan for
    * @return the manifest locations for this kind of metadata to scan
@@ -136,7 +135,7 @@ public final class MetaDataUtil {
   /**
    * Get system properties indicating which locations to scan for descriptions of the given type. A
    * list of locations may be given separated by ";".
-   *
+   * 
    * @param aType
    *          the type of metadata to scan for
    * @return the locations for this kind of metadata to scan
@@ -160,7 +159,7 @@ public final class MetaDataUtil {
 
   /**
    * Get all currently accessible descriptor locations for the given type.
-   *
+   * 
    * @param aType
    *          the type of metadata to scan for
       * @return an array of locations.

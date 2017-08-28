@@ -24,7 +24,7 @@
   <vendor/>
   <types>
     <typeDescription>
-      <name>org.apache.uima.fit.examples.tutorial.type.UimaAcronym</name>
+      <name>org.apache.uima.fit.osgi.examples.tutorial.type.UimaAcronym</name>
       <description/>
       <supertypeName>uima.tcas.Annotation</supertypeName>
       <features>

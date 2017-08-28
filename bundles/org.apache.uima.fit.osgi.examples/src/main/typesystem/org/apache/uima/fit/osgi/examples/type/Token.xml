@@ -18,40 +18,20 @@
 	under the License.
 -->
 <typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
-  <name>DateAnnotaton</name>
+  <name>Token</name>
   <description/>
   <version>1.0</version>
   <vendor/>
-  <imports>
-    <import name="org.apache.uima.fit.examples.tutorial.type.DateAnnotaton"/>
-    <import name="org.apache.uima.fit.examples.tutorial.type.TimeAnnotation"/>
-    <import name="org.apache.uima.fit.examples.tutorial.type.RoomNumber"/>
-  </imports>
   <types>
     <typeDescription>
-      <name>org.apache.uima.fit.examples.tutorial.type.Meeting</name>
+      <name>org.apache.uima.fit.osgi.examples.type.Token</name>
       <description/>
       <supertypeName>uima.tcas.Annotation</supertypeName>
       <features>
         <featureDescription>
-          <name>room</name>
+          <name>pos</name>
           <description/>
-          <rangeTypeName>org.apache.uima.fit.examples.tutorial.type.RoomNumber</rangeTypeName>
-        </featureDescription>
-        <featureDescription>
-          <name>date</name>
-          <description/>
-          <rangeTypeName>org.apache.uima.fit.examples.tutorial.type.DateAnnotation</rangeTypeName>
-        </featureDescription>
-        <featureDescription>
-          <name>startTime</name>
-          <description/>
-          <rangeTypeName>org.apache.uima.fit.examples.tutorial.type.TimeAnnotation</rangeTypeName>
-        </featureDescription>
-        <featureDescription>
-          <name>endTime</name>
-          <description/>
-          <rangeTypeName>org.apache.uima.fit.examples.tutorial.type.TimeAnnotation</rangeTypeName>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
         </featureDescription>
       </features>
     </typeDescription>

@@ -18,13 +18,52 @@
  */
 package org.apache.uima.fit.osgi.utils;
 
+import static org.apache.uima.UIMAFramework.getXMLParser;
+import static org.apache.uima.fit.descriptor.OperationalProperties.MODIFIES_CAS_DEFAULT;
+import static org.apache.uima.fit.descriptor.OperationalProperties.MULTIPLE_DEPLOYMENT_ALLOWED_DEFAULT;
+import static org.apache.uima.fit.descriptor.OperationalProperties.OUTPUTS_NEW_CASES_DEFAULT;
+import static org.apache.uima.fit.factory.ConfigurationParameterFactory.createConfigurationData;
+import static org.apache.uima.fit.factory.ConfigurationParameterFactory.ensureParametersComeInPairs;
+import static org.apache.uima.fit.factory.ConfigurationParameterFactory.setParameters;
+import static org.apache.uima.fit.factory.ExternalResourceFactory.bindExternalResource;
+import static org.apache.uima.fit.factory.ExternalResourceFactory.createExternalResourceDependencies;
+import static org.apache.uima.fit.factory.FsIndexFactory.createFsIndexCollection;
+import static org.apache.uima.fit.factory.TypePrioritiesFactory.createTypePriorities;
+import static org.apache.uima.util.CasCreationUtils.mergeTypeSystems;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.commons.logging.LogFactory;
+import org.apache.uima.Constants;
 import org.apache.uima.UIMAFramework;
 import org.apache.uima.analysis_component.AnalysisComponent;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
-import org.apache.uima.fit.factory.AnalysisEngineFactory;
+import org.apache.uima.analysis_engine.metadata.AnalysisEngineMetaData;
+import org.apache.uima.fit.factory.CapabilityFactory;
+import org.apache.uima.fit.factory.ConfigurationParameterFactory.ConfigurationData;
+import org.apache.uima.fit.factory.ExternalResourceFactory;
+import org.apache.uima.fit.factory.FsIndexFactory;
+import org.apache.uima.fit.factory.ResourceCreationSpecifierFactory;
+import org.apache.uima.fit.factory.ResourceMetaDataFactory;
+import org.apache.uima.fit.internal.ReflectionUtil;
+import org.apache.uima.fit.internal.ResourceManagerFactory;
+import org.apache.uima.resource.ExternalResourceDescription;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.ResourceManager;
+import org.apache.uima.resource.metadata.Capability;
+import org.apache.uima.resource.metadata.ConfigurationParameter;
+import org.apache.uima.resource.metadata.FsIndexCollection;
+import org.apache.uima.resource.metadata.OperationalProperties;
+import org.apache.uima.resource.metadata.TypePriorities;
+import org.apache.uima.resource.metadata.TypeSystemDescription;
+import org.apache.uima.util.CasCreationUtils;
+import org.apache.uima.util.InvalidXMLException;
+import org.apache.uima.util.XMLInputSource;
 
 /**
  * A collection of static methods for creating UIMA {@link AnalysisEngineDescription
@@ -35,14 +74,154 @@ import org.apache.uima.resource.ResourceManager;
  */
 public class AnalysisEngineFactoryOSGi {
 
-	public static AnalysisEngine createEngine(AnalysisEngineDescription desc, ResourceManager resourceManager) throws ResourceInitializationException {
-		return UIMAFramework.produceAnalysisEngine(desc, resourceManager, null);
-	}
+	public static AnalysisEngine createEngine(Class<? extends AnalysisComponent> componentClass,
+	          Object... configurationData) throws ResourceInitializationException {
+	    AnalysisEngineDescription desc = createEngineDescription(componentClass, configurationData);
 
-	public static AnalysisEngine createEngine(Class<? extends AnalysisComponent> componentClass, ResourceManager resourceManager, Object... configurationData) throws ResourceInitializationException {
-		AnalysisEngineDescription desc = AnalysisEngineFactory.createEngineDescription(componentClass, configurationData);
+	    // create the AnalysisEngine, initialize it and return it
+	    return createEngine(desc);
+	  }
 
-		// create the AnalysisEngine, initialize it and return it
-		return createEngine(desc, resourceManager);
-	}
+	public static AnalysisEngine createEngine(AnalysisEngineDescription desc,
+	          Object... configurationData) throws ResourceInitializationException {
+	    if (configurationData == null || configurationData.length == 0) {
+	      return UIMAFramework.produceAnalysisEngine(desc, ResourceManagerFactory.newResourceManager(),
+	              null);
+	    } else {
+	      AnalysisEngineDescription descClone = (AnalysisEngineDescription) desc.clone();
+	      ResourceCreationSpecifierFactory.setConfigurationParameters(descClone, configurationData);
+	      return UIMAFramework.produceAnalysisEngine(descClone,
+	              ResourceManagerFactory.newResourceManager(), null);
+	    }
+	  }
+
+	public static AnalysisEngineDescription createEngineDescription(
+	          Class<? extends AnalysisComponent> componentClass, Object... configurationData)
+	          throws ResourceInitializationException {
+	    TypeSystemDescription typeSystem = createTypeSystemDescription();
+	    TypePriorities typePriorities = createTypePriorities();
+	    FsIndexCollection fsIndexCollection = createFsIndexCollection();
+
+	    return createEngineDescription(componentClass, typeSystem, typePriorities, fsIndexCollection,
+	            (Capability[]) null, configurationData);
+	  }
+
+	public static AnalysisEngineDescription createEngineDescription(
+	          Class<? extends AnalysisComponent> componentClass, TypeSystemDescription typeSystem,
+	          TypePriorities typePriorities, FsIndexCollection indexes, Capability[] capabilities,
+	          Object... configurationData) throws ResourceInitializationException {
+
+	    ensureParametersComeInPairs(configurationData);
+
+	    // Extract ExternalResourceDescriptions from configurationData
+	    // <ParamterName, ExternalResourceDescription> will be stored in this map
+	    Map<String, ExternalResourceDescription> externalResources = ExternalResourceFactory
+	            .extractExternalResourceParameters(configurationData);
+
+	    // Create primitive description normally
+	    ConfigurationData cdata = createConfigurationData(configurationData);
+	    return createEngineDescription(componentClass, typeSystem, typePriorities, indexes,
+	            capabilities, cdata.configurationParameters, cdata.configurationValues,
+	            externalResources);
+	  }
+
+	public static AnalysisEngineDescription createEngineDescription(
+	          Class<? extends AnalysisComponent> componentClass, TypeSystemDescription typeSystem,
+	          TypePriorities typePriorities, FsIndexCollection indexes, Capability[] capabilities,
+	          ConfigurationParameter[] configurationParameters, Object[] configurationValues,
+	          Map<String, ExternalResourceDescription> externalResources)
+	          throws ResourceInitializationException {
+
+	    // create the descriptor and set configuration parameters
+	    AnalysisEngineDescription desc = UIMAFramework.getResourceSpecifierFactory()
+	            .createAnalysisEngineDescription();
+	    desc.setFrameworkImplementation(Constants.JAVA_FRAMEWORK_NAME);
+	    desc.setPrimitive(true);
+	    desc.setAnnotatorImplementationName(componentClass.getName());
+	    org.apache.uima.fit.descriptor.OperationalProperties componentAnno = ReflectionUtil
+	            .getInheritableAnnotation(org.apache.uima.fit.descriptor.OperationalProperties.class,
+	                    componentClass);
+	    if (componentAnno != null) {
+	      OperationalProperties op = desc.getAnalysisEngineMetaData().getOperationalProperties();
+	      op.setMultipleDeploymentAllowed(componentAnno.multipleDeploymentAllowed());
+	      op.setModifiesCas(componentAnno.modifiesCas());
+	      op.setOutputsNewCASes(componentAnno.outputsNewCases());
+	    } else {
+	      OperationalProperties op = desc.getAnalysisEngineMetaData().getOperationalProperties();
+	      op.setMultipleDeploymentAllowed(MULTIPLE_DEPLOYMENT_ALLOWED_DEFAULT);
+	      op.setModifiesCas(MODIFIES_CAS_DEFAULT);
+	      op.setOutputsNewCASes(OUTPUTS_NEW_CASES_DEFAULT);
+	    }
+
+	    // Configure resource meta data
+	    AnalysisEngineMetaData meta = desc.getAnalysisEngineMetaData();
+	    ResourceMetaDataFactory.configureResourceMetaData(meta, componentClass);
+
+	    // set parameters
+	    setParameters(desc, componentClass, configurationParameters, configurationValues);
+
+	    // set the type system
+	    if (typeSystem != null) {
+	      desc.getAnalysisEngineMetaData().setTypeSystem(typeSystem);
+	    }
+
+	    if (typePriorities != null) {
+	      desc.getAnalysisEngineMetaData().setTypePriorities(typePriorities);
+	    }
+
+	    // set indexes from the argument to this call and from the annotation present in the
+	    // component
+	    List<FsIndexCollection> fsIndexes = new ArrayList<FsIndexCollection>();
+	    if (indexes != null) {
+	      fsIndexes.add(indexes);
+	    }
+	    fsIndexes.add(FsIndexFactory.createFsIndexCollection(componentClass));
+	    FsIndexCollection aggIndexColl = CasCreationUtils.mergeFsIndexes(fsIndexes,
+	            ResourceManagerFactory.newResourceManager());
+	    desc.getAnalysisEngineMetaData().setFsIndexCollection(aggIndexColl);
+
+	    // set capabilities from the argument to this call or from the annotation present in the
+	    // component if the argument is null
+	    if (capabilities != null) {
+	      desc.getAnalysisEngineMetaData().setCapabilities(capabilities);
+	    } else {
+	      Capability capability = CapabilityFactory.createCapability(componentClass);
+	      if (capability != null) {
+	        desc.getAnalysisEngineMetaData().setCapabilities(new Capability[] { capability });
+	      }
+	    }
+
+	    // Extract external resource dependencies
+	    desc.setExternalResourceDependencies(createExternalResourceDependencies(componentClass));
+
+	    // Bind External Resources
+	    if (externalResources != null) {
+	      for (Entry<String, ExternalResourceDescription> e : externalResources.entrySet()) {
+	        bindExternalResource(desc, e.getKey(), e.getValue());
+	      }
+	    }
+
+	    return desc;
+	  }
+
+	public static TypeSystemDescription createTypeSystemDescription()
+	          throws ResourceInitializationException {
+	    List<TypeSystemDescription> tsdList = new ArrayList<TypeSystemDescription>();
+	    for (String location : MyBundleTracker.getLocations()) {//scanTypeDescriptors()) {
+	      try {
+	        XMLInputSource xmlInputType1 = new XMLInputSource(location);
+	        tsdList.add(getXMLParser().parseTypeSystemDescription(xmlInputType1));
+	        LogFactory.getLog(TypeSystemDescription.class).debug(
+	                "Detected type system at [" + location + "]");
+	      } catch (IOException e) {
+	        throw new ResourceInitializationException(e);
+	      } catch (InvalidXMLException e) {
+	        LogFactory.getLog(TypeSystemDescription.class).warn(
+	                "[" + location + "] is not a type file. Ignoring.", e);
+	      }
+	    }
+
+	    ResourceManager resMgr = ResourceManagerFactory.newResourceManager();
+	    return mergeTypeSystems(tsdList, resMgr);
+	  }
 }

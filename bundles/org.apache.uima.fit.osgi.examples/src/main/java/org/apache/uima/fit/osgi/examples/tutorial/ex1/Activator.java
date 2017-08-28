@@ -3,103 +3,79 @@ package org.apache.uima.fit.osgi.examples.tutorial.ex1;
 import static org.apache.uima.fit.util.JCasUtil.select;
 
 import org.apache.uima.UIMAFramework;
+import org.apache.uima.UimaContext;
+import org.apache.uima.UimaContextAdmin;
+import org.apache.uima.UimaContextHolder;
 import org.apache.uima.analysis_engine.AnalysisEngine;
-import org.apache.uima.cas.CAS;
-import org.apache.uima.cas.TypeSystem;
-import org.apache.uima.cas.admin.TypeSystemMgr;
 import org.apache.uima.fit.internal.ResourceManagerFactory;
+import org.apache.uima.fit.internal.ResourceManagerFactory.ResourceManagerCreator;
 import org.apache.uima.fit.osgi.examples.tutorial.type.RoomNumber;
-import org.apache.uima.fit.osgi.utils.UIMABundleActivator;
-import org.apache.uima.fit.osgi.utils.cl.ClerezzaUIMAExtensionClassLoader;
-import org.apache.uima.fit.osgi.utils.cl.UIMAClassLoaderRepository;
+import org.apache.uima.fit.osgi.utils.AnalysisEngineFactoryOSGi;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.ResourceManager;
-import org.apache.uima.resource.metadata.TypeDescription;
-import org.apache.uima.resource.metadata.TypeSystemDescription;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferencePolicy;
 
 @Component
-public class Activator extends UIMABundleActivator {
-	@Reference(policy=ReferencePolicy.STATIC)
-	protected UIMAClassLoaderRepository classLoaderRepository;
+public class Activator {
+	  public static class DefaultResourceManagerCreator2 implements ResourceManagerCreator {
+		    protected ResourceManager resourceManager;
+
+		    public DefaultResourceManagerCreator2(ResourceManager resourceManager) {
+		    	this.resourceManager = resourceManager;
+		    }
+		    public ResourceManager newResourceManager() throws ResourceInitializationException {
+		        UimaContext activeContext = UimaContextHolder.getContext();
+		        if (activeContext != null) {
+		          // If we are already in a UIMA context, then we re-use it. Mind that the JCas cannot
+		          // handle switching across more than one classloader.
+		          // This can be done since UIMA 2.9.0 and starts being handled in uimaFIT 2.3.0
+		          // See https://issues.apache.org/jira/browse/UIMA-5056
+		          return ((UimaContextAdmin) activeContext).getResourceManager();
+		        }
+		        else {
+		          return resourceManager;
+		        }
+		    }
+		  }
 
 	/*
 	 * (non-Javadoc)
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
 	 */
 	@Activate
-	@Override
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
-		System.out.println("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
-		original();
+	public void start(BundleContext context) {
+		try {
+			System.out.println("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
+			original();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
-	protected void original() throws Exception {
-	    String text = "The meeting was moved from Yorktown 01-144 to Hawthorne 1S-W33.";
+	protected void original()  {
+		try {
+		    String text = "The meeting was moved from Yorktown 01-144 to Hawthorne 1S-W33.";
 
-	    AnalysisEngine analysisEngine = org.apache.uima.fit.factory.AnalysisEngineFactory.createEngine(RoomNumberAnnotator.class);
-	    JCas jCas = analysisEngine.newJCas();
-	    jCas.setDocumentText(text);
-	    analysisEngine.process(jCas);
+		    ResourceManager resourceManager = UIMAFramework.newDefaultResourceManager();
+		    ClassLoader cl = getClass().getClassLoader();
+		    resourceManager.setExtensionClassPath(cl, "", true);
+		    ResourceManagerFactory.setResourceManagerCreator(new DefaultResourceManagerCreator2(resourceManager));
 
-	    for (RoomNumber roomNumber : select(jCas, RoomNumber.class)) {
-	      System.out.println(roomNumber.getCoveredText() + "\tbuilding = " + roomNumber.getBuilding());
-	    }
-	}
+		    AnalysisEngine analysisEngine = AnalysisEngineFactoryOSGi.createEngine(RoomNumberAnnotator.class);
+		    JCas jCas = analysisEngine.newJCas();
+		    jCas.setDocumentText(text);
+		    analysisEngine.process(jCas);
 
-	protected void modified() throws Exception {
-		String text = "The meeting was moved from Yorktown 01-144 to Hawthorne 1S-W33.";
-
-		ResourceManager resourceManager = ResourceManagerFactory.newResourceManager();
-	    ClassLoader cl = getClass().getClassLoader();
-	    ClassLoader ccl = new ClerezzaUIMAExtensionClassLoader(cl, classLoaderRepository.getComponents());
-	    resourceManager.setExtensionClassPath(ccl, "*", true);
-
-	    //List<TypeSystemDescription> tsdList = new ArrayList<TypeSystemDescription>();
-	    //TypeSystemDescription tsd = mergeTypeSystems(tsdList, resourceManager);
-
-	    AnalysisEngine analysisEngine = org.apache.uima.fit.osgi.utils.AnalysisEngineFactoryOSGi.createEngine(RoomNumberAnnotator.class, resourceManager);
-
-	    JCas jCas = analysisEngine.newJCas();
-	    jCas.setDocumentText(text);
-
-	    //jCas.getCasImpl().commitTypeSystem();
-
-	    //initTypeSystem(tsd, jCas);
-	    analysisEngine.process(jCas);
-
-	    for (RoomNumber roomNumber : select(jCas, RoomNumber.class)) {
-	      System.out.println(roomNumber.getCoveredText() + "\tbuilding = " + roomNumber.getBuilding());
-	    }
-	}
-
-	protected void classRegistered() {
-		classLoaderRepository.registerComponent(RoomNumberAnnotator.class);
-	}
-
-	/**
-	 * TODO JavaDoc
-	 *
-	 * @param tsd
-	 * @param jCas
-	 */
-	private void initTypeSystem(JCas jCas) {
-		TypeSystemDescription tsd = UIMAFramework.getResourceSpecifierFactory()
-            .createTypeSystemDescription();
-
-		TypeDescription type = tsd.addType("MyType", "", CAS.TYPE_NAME_TOP);
-		TypeSystem ts = jCas.getTypeSystem();
-	    TypeSystemMgr tmr = (TypeSystemMgr)ts;
-	    //tmr.
-
-	    tmr.addType("building", ts.getType(CAS.TYPE_NAME_STRING));
-	    //tmr.add("building", ts.getType(CAS.TYPE_NAME_STRING));
+		    for (RoomNumber roomNumber : select(jCas, RoomNumber.class)) {
+		      System.out.println(roomNumber.getCoveredText() + "\tbuilding = " + roomNumber.getBuilding());
+		    }
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/*

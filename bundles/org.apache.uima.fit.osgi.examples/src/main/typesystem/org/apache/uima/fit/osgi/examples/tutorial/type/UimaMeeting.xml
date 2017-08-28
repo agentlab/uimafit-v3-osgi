@@ -18,15 +18,18 @@
 	under the License.
 -->
 <typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
-  <name>Sentence</name>
+  <name>UimaMeeting</name>
   <description/>
   <version>1.0</version>
   <vendor/>
+  <imports>
+    <import name="org.apache.uima.fit.osgi.examples.tutorial.type.Meeting"/>
+  </imports>
   <types>
     <typeDescription>
-      <name>org.apache.uima.fit.examples.type.Sentence</name>
+      <name>org.apache.uima.fit.osgi.examples.tutorial.type.UimaMeeting</name>
       <description/>
-      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <supertypeName>org.apache.uima.fit.osgi.examples.tutorial.type.Meeting</supertypeName>
     </typeDescription>
   </types>
 </typeSystemDescription>

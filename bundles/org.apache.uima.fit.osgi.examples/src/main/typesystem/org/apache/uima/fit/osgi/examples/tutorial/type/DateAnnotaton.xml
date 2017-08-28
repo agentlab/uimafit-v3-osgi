@@ -23,13 +23,13 @@
   <version>1.0</version>
   <vendor/>
   <imports>
-    <import name="org.apache.uima.fit.examples.tutorial.type.DateTimeAnnotation"/>
+    <import name="org.apache.uima.fit.osgi.examples.tutorial.type.DateTimeAnnotation"/>
   </imports>
   <types>
     <typeDescription>
-      <name>org.apache.uima.fit.examples.tutorial.type.DateAnnotation</name>
+      <name>org.apache.uima.fit.osgi.examples.tutorial.type.DateAnnotation</name>
       <description/>
-      <supertypeName>org.apache.uima.fit.examples.tutorial.type.DateTimeAnnotation</supertypeName>
+      <supertypeName>org.apache.uima.fit.osgi.examples.tutorial.type.DateTimeAnnotation</supertypeName>
     </typeDescription>
   </types>
 </typeSystemDescription>

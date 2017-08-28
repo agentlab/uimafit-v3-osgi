@@ -7,6 +7,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.apache.uima.fit.internal.MetaDataType;
 import org.apache.uima.resource.ResourceInitializationException;
@@ -22,40 +24,49 @@ import org.osgi.util.tracker.BundleTrackerCustomizer;
  *
  */
 public class MyBundleTracker extends BundleTracker {
+	protected static ArrayList<String> tdLocations = new ArrayList<>();
+	protected static String[] tmp = {};
 
 	public MyBundleTracker(BundleContext context, int stateMask, BundleTrackerCustomizer<?> customizer) {
 		super(context, stateMask, customizer);
+	}
+
+	public static String[] getLocations() {
+		return tdLocations.toArray(tmp);
 	}
 
 	public Object addingBundle(Bundle bundle, BundleEvent event) {
 		// Typically we would inspect bundle, to figure out if we want to
 		// track it or not. If we don't want to track return null, otherwise
 		// return an object.
-		print(bundle, event);
+		if(event == null || bundle == null)
+			return null;
 
-		if(event.getType() == BundleEvent.RESOLVED) {
+		//print(bundle, event);
+
+		int t = event.getType();
+		if(t == BundleEvent.RESOLVED || t == BundleEvent.STARTED || t == BundleEvent.STARTING) {
 			URL url = bundle.getResource("META-INF/org.apache.uima.fit/types.txt");
-			System.out.println(url.toString());
+			if(url != null) {
+				///System.out.println(url.toString());
 
-			OsgiBundleResourcePatternResolver resolver = new OsgiBundleResourcePatternResolver(bundle);
+				OsgiBundleResourcePatternResolver resolver = new OsgiBundleResourcePatternResolver(bundle);
 
-			try {
-			  if(bundle.getSymbolicName().equals("com._1c.nlp.pipeline")) {
-  				String[] tdLocations = org.apache.uima.fit.osgi.impl.MetaDataUtil.scanDescriptors(resolver, MetaDataType.TYPE_SYSTEM);
-  				BufferedReader br =new BufferedReader(new InputStreamReader(url.openConnection().getInputStream()));
-  				while(br.ready()){
-  				    System.out.println(br.readLine());
-  				}
-  				br.close();
-			  }
+				try {
+	  				tdLocations.addAll(Arrays.asList(org.apache.uima.fit.osgi.impl.MetaDataUtil.scanDescriptors(resolver, MetaDataType.TYPE_SYSTEM)));
+	  				/*BufferedReader br =new BufferedReader(new InputStreamReader(url.openConnection().getInputStream()));
+	  				while(br.ready()){
+	  				    System.out.println(br.readLine());
+	  				}
+	  				br.close();*/
+				}
+				catch (ResourceInitializationException/* | IOException*/ e) {
+					e.printStackTrace();
+				}
+				return bundle;
 			}
-			catch (ResourceInitializationException | IOException e) {
-				e.printStackTrace();
-			}
-		} else if(event.getType() == BundleEvent.UNRESOLVED) {
-
 		}
-		return bundle;
+		return null;
 	}
 
 	private void print(Bundle bundle, BundleEvent event) {
@@ -66,11 +77,11 @@ public class MyBundleTracker extends BundleTracker {
 	}
 
 	public void removedBundle(Bundle bundle, BundleEvent event, Object object) {
-		print(bundle, event);
+		//print(bundle, event);
 	}
 
 	public void modifiedBundle(Bundle bundle, BundleEvent event, Object object) {
-		print(bundle, event);
+		//print(bundle, event);
 	}
 
 	private static String stateAsString(Bundle bundle) {
