@@ -27,8 +27,13 @@ To invoke the full build:
     gradle clean assemble testClasses
     gradle resolve.debug
     gradle testOSGi.debug
+	
+	check WebConsole at http://127.0.0.1:9090/system/console
 
-http://127.0.0.1:9090/system/console
+## Publish to local Maven repository
+
+    gradle clean publishToMavenLocal
+
 
 ## Code convention
 

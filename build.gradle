@@ -28,7 +28,7 @@ def repositorySnapshot = "https://agentlab.ru/nexus/repository/maven-snapshots/"
 def repositoryRelease  = "https://agentlab.ru/nexus/repository/maven-releases/"
 def repositoryUsername = "ci"
 def repositoryPassword = "=S%gm/Hpt"
-def snapshot = '-SNAPSHOT'
+def snapshot = '-201708311425'
 
 def uimaVersion = '3.0.0-alpha02'
 
@@ -72,7 +72,6 @@ allprojects {
 }
 
 subprojects {
-
     apply plugin: 'com.dictanova.jcasgen'
     apply plugin: 'java'
     apply plugin: 'biz.aQute.bnd.builder'
@@ -194,6 +193,11 @@ subprojects {
         from sourceSets.main.output
     }
 
+	task sourcesJar(type: Jar, dependsOn: classes) {
+		classifier = 'sources'
+		from sourceSets.main.allSource
+	}
+
     //
     // Create TestOSGi and Export tasks for all *.bndrun file
     //
@@ -220,6 +224,7 @@ subprojects {
         publications {
             mavenJava(MavenPublication) {
                 from components.java
+				artifact sourcesJar
             }
         }
     }
