@@ -32,6 +32,7 @@ import static org.apache.uima.fit.factory.TypePrioritiesFactory.createTypePriori
 import static org.apache.uima.util.CasCreationUtils.mergeTypeSystems;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,9 @@ import java.util.Map.Entry;
 import org.apache.commons.logging.LogFactory;
 import org.apache.uima.Constants;
 import org.apache.uima.UIMAFramework;
+import org.apache.uima.UimaContext;
+import org.apache.uima.UimaContextAdmin;
+import org.apache.uima.UimaContextHolder;
 import org.apache.uima.analysis_component.AnalysisComponent;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
@@ -52,6 +56,7 @@ import org.apache.uima.fit.factory.ResourceCreationSpecifierFactory;
 import org.apache.uima.fit.factory.ResourceMetaDataFactory;
 import org.apache.uima.fit.internal.ReflectionUtil;
 import org.apache.uima.fit.internal.ResourceManagerFactory;
+import org.apache.uima.fit.internal.ResourceManagerFactory.ResourceManagerCreator;
 import org.apache.uima.resource.ExternalResourceDescription;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.ResourceManager;
@@ -73,9 +78,40 @@ import org.apache.uima.util.XMLInputSource;
  *      component instances?</a>
  */
 public class AnalysisEngineFactoryOSGi {
+	public static class DefaultResourceManagerCreator2 implements ResourceManagerCreator {
+		protected ResourceManager resourceManager;
+
+		public DefaultResourceManagerCreator2(ResourceManager resourceManager) {
+			this.resourceManager = resourceManager;
+		}
+
+		public ResourceManager newResourceManager() throws ResourceInitializationException {
+			UimaContext activeContext = UimaContextHolder.getContext();
+			if (activeContext != null) {
+				// If we are already in a UIMA context, then we re-use it. Mind that the JCas cannot
+				// handle switching across more than one classloader.
+				// This can be done since UIMA 2.9.0 and starts being handled in uimaFIT 2.3.0
+				// See https://issues.apache.org/jira/browse/UIMA-5056
+				return ((UimaContextAdmin) activeContext).getResourceManager();
+			} else {
+				return resourceManager;
+			}
+		}
+	}
+
+	/**
+	 * Prevent class instantiation
+	 */
+	private AnalysisEngineFactoryOSGi() {}
 
 	public static AnalysisEngine createEngine(Class<? extends AnalysisComponent> componentClass,
-	          Object... configurationData) throws ResourceInitializationException {
+	          Object... configurationData) throws ResourceInitializationException, MalformedURLException {
+
+		ResourceManager resourceManager = UIMAFramework.newDefaultResourceManager();
+		ClassLoader cl = componentClass.getClassLoader();
+		resourceManager.setExtensionClassPath(cl, "", true);
+		ResourceManagerFactory.setResourceManagerCreator(new DefaultResourceManagerCreator2(resourceManager));
+
 	    AnalysisEngineDescription desc = createEngineDescription(componentClass, configurationData);
 
 	    // create the AnalysisEngine, initialize it and return it
